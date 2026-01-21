@@ -425,7 +425,7 @@ async function processQueue() {
     }
 
     // 3. RECURSIVE LOOP (Run next step)
-    await new Promise(r => setTimeout(r, 300)); 
+    await new Promise(r => setTimeout(r, 800)); 
     processQueue(); 
 }
 
