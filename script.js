@@ -200,21 +200,15 @@ window.loadLevel = function(index) {
 
 function resetVisuals() {
     // --- 1. DETERMINE GOAL LOCATION ---
-    // We calculate this FIRST. 
-    
     if (currentLevel.possibleGoals && currentLevel.possibleGoals.length > 0) {
-        // SCENARIO A: Pick from the list (Level 6: Lucky Search)
-        // This picks a random object like {x:2, y:0}
         const randSpot = currentLevel.possibleGoals[Math.floor(Math.random() * currentLevel.possibleGoals.length)];
         currentLevel.currentGoalX = randSpot.x;
         currentLevel.currentGoalY = randSpot.y;
     } 
     else if (currentLevel.randomGoal) {
-        // SCENARIO B: Completely random (Level 1)
         currentLevel.currentGoalX = Math.floor(Math.random() * 9);
         currentLevel.currentGoalY = Math.floor(Math.random() * 9);
     } else {
-        // SCENARIO C: Fixed Goal (Levels 2, 3, 4, 5)
         currentLevel.currentGoalX = currentLevel.goalX;
         currentLevel.currentGoalY = currentLevel.goalY;
     }
@@ -234,8 +228,6 @@ function resetVisuals() {
     if (typeof updateSprite === "function") updateSprite(); 
 
     // --- 4. DRAW GOAL ---
-    // KEY FIX: We use the coordinates calculated in Step 1.
-    // We do NOT recalculate them here.
     const goal = document.getElementById("goal");
     goal.style.display = "block";
     goal.style.left = (currentLevel.currentGoalX * 40) + "px";
@@ -243,23 +235,21 @@ function resetVisuals() {
 
     // --- 5. DRAW WALLS (Hurdles) ---
     const container = document.getElementById("world-container");
-    // Remove old walls
     document.querySelectorAll('.wall').forEach(e => e.remove());
     
-    const activeWalls = currentLevel.walls || [];
+    // FIX: Removed 'const' so we update the GLOBAL variable
+    activeWalls = currentLevel.walls || []; 
     
     activeWalls.forEach(w => {
         const wallDiv = document.createElement("div");
         wallDiv.classList.add("wall");
         
         if (w.side === 'E') {
-            // Vertical Wall
             wallDiv.classList.add("wall-vertical");
             wallDiv.style.left = ((w.x + 1) * 40) + "px"; 
             wallDiv.style.bottom = (w.y * 40) + "px";
         } 
         else if (w.side === 'N') {
-            // Horizontal Wall (Ceiling)
             wallDiv.classList.add("wall-horizontal");
             wallDiv.style.left = (w.x * 40) + "px";
             wallDiv.style.bottom = ((w.y + 1) * 40) - 3 + "px"; 
