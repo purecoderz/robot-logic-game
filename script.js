@@ -144,6 +144,7 @@ const levels = [
 ];
 
 // --- 2. STATE VARIABLES ---
+let GAME_SPEED = 500; // 1000ms = 1 second per move (Change this to make it faster/slower)
 let currentLevel = levels[0]; 
 let robotX = 0;
 let robotY = 0;
@@ -283,8 +284,13 @@ WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((resu
 
 // --- 5. SIMULATION ENGINE ---
 window.addToAnimationQueue = (action) => {
+    // 1. Add the move to the list
     animationQueue.push(action);
-    processQueue();
+    
+    // 2. GUARD: Only start the loop if it's not already running!
+    if (!isAnimating) {
+        processQueue();
+    }
 };
 
 window.runSimulation = function() {
@@ -425,7 +431,8 @@ async function processQueue() {
     }
 
     // 3. RECURSIVE LOOP (Run next step)
-    await new Promise(r => setTimeout(r, 800)); 
+    console.log("Waiting " + GAME_SPEED + "ms...");
+    await new Promise(r => setTimeout(r, GAME_SPEED)); 
     processQueue(); 
 }
 
