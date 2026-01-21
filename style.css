@@ -70,9 +70,37 @@ main {
 }
 
 @media (max-width: 900px) {
-    main { flex-direction: column; overflow-y: auto; height: auto; }
-}
+    /* 1. Allow the full page to scroll on mobile */
+    body {
+        height: auto;
+        overflow-y: auto;
+    }
 
+    /* 2. Stack elements vertically */
+    main { 
+        flex-direction: column; 
+        height: auto;          /* Let the content define the height */
+        overflow: visible;     /* No internal scrollbars, scroll the whole page */
+    }
+
+    /* 3. CRITICAL: Force the editor to have height */
+    .editor-pane {
+        min-height: 400px; /* Give it physical space so it doesn't collapse */
+        flex: none;        /* Disable flexing behavior here */
+    }
+    
+    /* 4. Ensure the world pane doesn't shrink either */
+    .world-pane {
+        flex: none;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    
+    /* 5. Center the game board on small screens */
+    #world-container {
+        max-width: 100%; /* Prevent it from going off-screen */
+    }
+}
 /* --- EDITOR STYLES --- */
 .editor-pane {
     flex: 1;
