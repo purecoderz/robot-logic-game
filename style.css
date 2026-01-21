@@ -1,0 +1,285 @@
+:root {
+    --bg-color: #f0f2f5;
+    --editor-bg: #1e1e1e;
+    --sidebar-bg: #ffffff;
+    --accent-color: #00add8;
+    --text-color: #333;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- HEADER & MISSION SELECTOR --- */
+header {
+    background: #ffffff;
+    padding: 0 2rem;
+    height: 60px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 { font-size: 1.2rem; font-weight: 700; color: #2c3e50; }
+
+.mission-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+select#mission-select {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    font-size: 0.9rem;
+    color: #333;
+    cursor: pointer;
+    outline: none;
+}
+
+select#mission-select:hover {
+    border-color: var(--accent-color);
+}
+
+.badge { 
+    background: var(--accent-color); 
+    color: white; 
+    padding: 6px 10px; 
+    border-radius: 4px; 
+    font-size: 0.85rem; 
+}
+
+/* --- MAIN LAYOUT --- */
+main {
+    display: flex;
+    flex: 1;
+    padding: 20px;
+    gap: 20px;
+    height: calc(100vh - 60px);
+    overflow: hidden;
+}
+
+@media (max-width: 900px) {
+    main { flex-direction: column; overflow-y: auto; height: auto; }
+}
+
+/* --- EDITOR STYLES --- */
+.editor-pane {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--editor-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    min-width: 300px;
+}
+
+.editor-header {
+    background: #252526;
+    color: #ccc;
+    padding: 10px 15px;
+    font-size: 0.9rem;
+}
+
+textarea#editor {
+    flex: 1;
+    width: 100%;
+    background: var(--editor-bg);
+    color: #d4d4d4;
+    border: none;
+    padding: 15px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 16px;
+    resize: none;
+    outline: none;
+}
+
+.editor-footer {
+    padding: 10px;
+    background: #252526;
+    display: flex;
+    justify-content: flex-end;
+}
+
+button.run-btn {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+button.run-btn:hover { background-color: #008bb0; }
+
+/* --- WORLD STYLES --- */
+.world-pane {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--sidebar-bg);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+#world-container {
+    border: 4px solid #333;
+    width: 400px; 
+    height: 400px;
+    background-color: #f9f9f9;
+    background-image: 
+        linear-gradient(#e5e5e5 1px, transparent 1px),
+        linear-gradient(90deg, #e5e5e5 1px, transparent 1px);
+    background-size: 40px 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* --- THE GOAL FLAG --- */
+#goal {
+    width: 40px; 
+    height: 40px;
+    position: absolute;
+    display: none; /* Hidden until level load */
+    z-index: 5;
+}
+#goal::after {
+    content: "🚩"; 
+    font-size: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* --- WALLS / HURDLES --- */
+.wall {
+    position: absolute;
+    background-color: #c0392b; /* Red Hurdle Color */
+    z-index: 8;
+}
+
+/* Vertical Wall (to the right of a cell) */
+.wall-vertical {
+    width: 6px;
+    height: 40px; 
+    margin-left: -3px; 
+}
+
+/* --- THE ROBOT SPRITE --- */
+#robot {
+    width: 40px; 
+    height: 40px;
+    position: absolute;
+    left: 0; bottom: 0;
+    z-index: 10;
+    transition: left 0.6s ease, bottom 0.6s ease;
+    
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="40" viewBox="0 0 160 40"><g transform="translate(10,5)"><rect x="4" y="0" width="14" height="14" rx="2" fill="%232ecc71" stroke="%2327ae60" stroke-width="2"/><rect x="6" y="14" width="10" height="12" fill="%232ecc71" stroke="%2327ae60" stroke-width="2"/><rect x="8" y="26" width="6" height="8" fill="%232ecc71"/><rect x="12" y="3" width="4" height="4" fill="black"/><path d="M12 20 L18 20" stroke="%2327ae60" stroke-width="2"/></g><g transform="translate(50,5)"><rect x="2" y="0" width="18" height="14" rx="2" fill="%232ecc71" stroke="%2327ae60" stroke-width="2"/><rect x="4" y="14" width="14" height="12" fill="%232ecc71" stroke="%2327ae60" stroke-width="2"/><rect x="6" y="26" width="4" height="8" fill="%232ecc71"/><rect x="12" y="26" width="4" height="8" fill="%232ecc71"/><rect x="6" y="2" width="10" height="10" fill="%2327ae60" opacity="0.3"/></g><g transform="translate(90,5)"><rect x="4" y="0" width="14" height="14" rx="2" fill="%232ecc71" stroke="%2327ae60" stroke-width="2"/><rect x="6" y="14" width="10" height="12" fill="%232ecc71" stroke="%2327ae60" stroke-width="2"/><rect x="8" y="26" width="6" height="8" fill="%232ecc71"/><rect x="6" y="3" width="4" height="4" fill="black"/><path d="M4 20 L10 20" stroke="%2327ae60" stroke-width="2"/></g><g transform="translate(130,5)"><rect x="2" y="0" width="18" height="14" rx="2" fill="%232ecc71" stroke="%2327ae60" stroke-width="2"/><rect x="4" y="14" width="14" height="12" fill="%232ecc71" stroke="%2327ae60" stroke-width="2"/><rect x="6" y="26" width="4" height="8" fill="%232ecc71"/><rect x="12" y="26" width="4" height="8" fill="%232ecc71"/><rect x="5" y="4" width="4" height="4" fill="black"/><rect x="13" y="4" width="4" height="4" fill="black"/><rect x="8" y="10" width="6" height="2" fill="%2327ae60"/></g></svg>');
+    
+    background-repeat: no-repeat;
+    background-size: 160px 40px; 
+}
+
+#robot.facing-east  { background-position: 0px 0px; }
+#robot.facing-north { background-position: -40px 0px; }
+#robot.facing-west  { background-position: -80px 0px; }
+#robot.facing-south { background-position: -120px 0px; }
+
+/* --- CONSOLE LOG --- */
+.console-log {
+    width: 100%;
+    max-width: 400px;
+    margin-top: 20px;
+    background: #2d2d2d;
+    color: #eee;
+    padding: 10px;
+    border-radius: 4px;
+    font-family: monospace;
+    height: 150px;
+    overflow-y: auto;
+}
+.log-entry { border-bottom: 1px solid #444; padding: 2px 0; font-size: 0.85rem; }
+
+/* --- MODAL STYLES --- */
+.modal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Dark semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100; /* Sit on top of everything */
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.modal.hidden {
+    display: none;
+    opacity: 0;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    text-align: center;
+    width: 300px;
+    border-left: 6px solid #e74c3c; /* Red stripe on left */
+    animation: popIn 0.3s ease;
+}
+
+@keyframes popIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* Update existing wall styles */
+
+/* Vertical Wall (Existing) */
+.wall-vertical {
+    width: 6px;
+    height: 40px; 
+    margin-left: -3px; 
+}
+
+/* NEW: Horizontal Wall (The Ceiling) */
+.wall-horizontal {
+    width: 40px;
+    height: 6px;
+    margin-top: -3px; /* Center it on the top line */
+    /* Position adjustments will happen in JS */
+}
+
+/* The new Reset Button */
+#reset-btn {
+    background-color: #f39c12; /* Orange */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-left: 10px; /* Space between buttons */
+}
+
+#reset-btn:hover {
+    background-color: #d35400; /* Darker Orange on hover */
+}
