@@ -359,6 +359,11 @@ async function processQueue() {
             const el = document.getElementById("robot");
             el.style.transform = "scale(1.2)";
             setTimeout(() => el.style.transform = "scale(1)", 200);
+
+            // --- NEW: Trigger the separate Success Modal ---
+            setTimeout(() => {
+                showSuccessModal(); 
+            }, 500);
         } else {
             // --- FAILURE: RAN OUT OF MOVES ---
             log("❌ Game Over: Robot stopped!", "error");
@@ -421,6 +426,10 @@ async function processQueue() {
                  log("🏆 SUCCESS! You found the flag!", "success");
                  animationQueue = []; // Stop remaining moves
                  isAnimating = false;
+                 // --- NEW: Trigger the separate Success Modal ---
+                setTimeout(() => {
+                    showSuccessModal(); 
+                }, 500);
                  return;
              }
          }
@@ -478,4 +487,19 @@ window.closeModalAndReset = function() {
     // Reset the robot position immediately
     resetVisuals();
     log("Robot repaired and reset.", "info");
+}
+
+// --- SUCCESS MODAL FUNCTIONS ---
+
+function showSuccessModal() {
+    const modal = document.getElementById("success-modal");
+    modal.classList.remove("hidden");
+}
+
+window.closeSuccessModal = function() {
+    const modal = document.getElementById("success-modal");
+    modal.classList.add("hidden");
+    
+    // We do NOT reset the robot here. 
+    // This leaves the robot standing on the flag so you can enjoy your victory!
 }

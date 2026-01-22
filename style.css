@@ -312,3 +312,108 @@ button.run-btn:hover { background-color: #008bb0; }
 #reset-btn:hover {
     background-color: #d35400; /* Darker Orange on hover */
 }
+
+/* --- SUCCESS MODAL STYLES --- */
+.success-theme {
+    border-left: 6px solid #2ecc71; /* Green stripe */
+}
+
+.success-theme h2 {
+    color: #2ecc71;
+}
+
+/* Button Layout */
+.modal-buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+/* "Next Level" Button */
+.primary-btn {
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+}
+.primary-btn:hover {
+    background-color: #27ae60;
+}
+
+/* "Stay Here" Button */
+.secondary-btn {
+    background-color: #eee;
+    color: #333;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.secondary-btn:hover {
+    background-color: #ddd;
+}
+
+
+/* --- HEADER BUTTON --- */
+#help-btn {
+    background: white;
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-right: 10px;
+    transition: background 0.2s;
+}
+#help-btn:hover {
+    background-color: #f0f0f0;
+    border-color: #aaa;
+}
+
+/* --- INFO MODAL THEME (BLUE) --- */
+.info-theme {
+    border-left: 6px solid #3498db; /* Blue Stripe */
+    text-align: left; /* Align text left for easier reading */
+    width: 450px;     /* Make this modal slightly wider */
+}
+
+.info-theme h2 {
+    color: #3498db;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Command List Styling */
+.command-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.command-list li {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.command-list code {
+    background-color: #f0f0f0;
+    color: #c7254e; /* Code Red color */
+    padding: 4px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 1.1em;
+    font-weight: bold;
+    display: block; /* Put code on its own line */
+    margin-bottom: 5px;
+}
+
+.command-list span {
+    font-size: 0.9rem;
+    color: #555;
+}
