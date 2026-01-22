@@ -36,21 +36,16 @@ const levels = [
         name: "3. Lucky Hurdles",
         description: "The flag hides in the gaps! Jump and check.",
         startX: 0, startY: 0,
-        // The goal only appears in the empty spaces between walls
         possibleGoals: [
             {x: 2, y: 0}, {x: 4, y: 0}, {x: 6, y: 0}, {x: 8, y: 0}
         ],
         walls: [
-            // Hurdle 1
             {x: 1, y: 0, side: 'E'}, 
             {x: 0, y: 1, side: 'N'}, {x: 1, y: 1, side: 'N'}, {x: 2, y: 1, side: 'N'},
-            // Hurdle 2
             {x: 3, y: 0, side: 'E'}, 
             {x: 2, y: 1, side: 'N'}, {x: 3, y: 1, side: 'N'}, {x: 4, y: 1, side: 'N'},
-            // Hurdle 3
             {x: 5, y: 0, side: 'E'}, 
             {x: 4, y: 1, side: 'N'}, {x: 5, y: 1, side: 'N'}, {x: 6, y: 1, side: 'N'},
-            // Hurdle 4
             {x: 7, y: 0, side: 'E'}, 
             {x: 6, y: 1, side: 'N'}, {x: 7, y: 1, side: 'N'}, {x: 8, y: 1, side: 'N'}
         ]
@@ -64,19 +59,12 @@ const levels = [
         startX: 0, startY: 0,
         goalX: 9, goalY: 0,
         walls: [
-            // HURDLE 1: LOW (Height 1)
             {x: 1, y: 0, side: 'E'}, 
             {x: 0, y: 1, side: 'N'}, {x: 1, y: 1, side: 'N'}, {x: 2, y: 1, side: 'N'},
-
-            // HURDLE 2: HIGH (Height 2)
             {x: 3, y: 0, side: 'E'}, {x: 3, y: 1, side: 'E'},
             {x: 3, y: 2, side: 'N'}, {x: 4, y: 2, side: 'N'},
-
-            // HURDLE 3: LOW (Height 1)
             {x: 5, y: 0, side: 'E'},
             {x: 5, y: 1, side: 'N'}, {x: 6, y: 1, side: 'N'},
-
-            // HURDLE 4: HIGH (Height 2)
             {x: 7, y: 0, side: 'E'}, {x: 7, y: 1, side: 'E'},
             {x: 7, y: 2, side: 'N'}, {x: 8, y: 2, side: 'N'}
         ]
@@ -90,17 +78,11 @@ const levels = [
         startX: 0, startY: 0,
         goalX: 6, goalY: 6,
         walls: [
-            // STEP 1
             {x: 0, y: 0, side: 'N'}, {x: 1, y: 0, side: 'E'},
-            // STEP 2
             {x: 1, y: 1, side: 'N'}, {x: 2, y: 1, side: 'E'},
-            // STEP 3
             {x: 2, y: 2, side: 'N'}, {x: 3, y: 2, side: 'E'},
-            // STEP 4
             {x: 3, y: 3, side: 'N'}, {x: 4, y: 3, side: 'E'},
-            // STEP 5
             {x: 4, y: 4, side: 'N'}, {x: 5, y: 4, side: 'E'},
-            // STEP 6
             {x: 5, y: 5, side: 'N'}
         ]
     },
@@ -113,45 +95,31 @@ const levels = [
         startX: 0, startY: 0,
         goalX: 4, goalY: 3,
         walls: [
-            // 1. First Hallway (Bottom)
             {x:0,y:0,side:'N'}, {x:1,y:0,side:'N'}, {x:2,y:0,side:'N'}, {x:3,y:0,side:'N'},
             {x:4,y:0,side:'N'}, {x:5,y:0,side:'N'}, {x:6,y:0,side:'N'}, {x:7,y:0,side:'N'},
-
-            // 2. Second Hallway (Right)
             {x:7,y:1,side:'E'}, {x:7,y:2,side:'E'}, {x:7,y:3,side:'E'}, {x:7,y:4,side:'E'},
             {x:7,y:5,side:'E'}, {x:7,y:6,side:'E'}, {x:7,y:7,side:'E'}, 
-
-            // 3. Third Hallway (Top)
             {x:1,y:7,side:'N'}, {x:2,y:7,side:'N'}, {x:3,y:7,side:'N'}, 
             {x:4,y:7,side:'N'}, {x:5,y:7,side:'N'}, {x:6,y:7,side:'N'}, 
-
-            // 4. Fourth Hallway (Left)
             {x:1,y:3,side:'E'}, {x:1,y:4,side:'E'}, {x:1,y:5,side:'E'}, {x:1,y:6,side:'E'}, {x:1,y:7,side:'E'},
-            
-            // 5. Inner Bottom
             {x:2,y:2,side:'N'}, {x:3,y:2,side:'N'}, {x:4,y:2,side:'N'}, {x:5,y:2,side:'N'},
-
-            // 6. Inner Right
             {x:5,y:3,side:'E'}, {x:5,y:4,side:'E'},
-
-            // 7. Inner Top
             {x:3,y:4,side:'N'}, {x:4,y:4,side:'N'},
-            
-            // 8. Final Stretch
             {x:3,y:4,side:'E'} 
         ]
     }
 ];
 
 // --- 2. STATE VARIABLES ---
-let GAME_SPEED = 500; // 1000ms = 1 second per move (Change this to make it faster/slower)
+let GAME_SPEED = 500; 
 let currentLevel = levels[0]; 
 let robotX = 0;
 let robotY = 0;
-let currentRotation = 0; // 0=East, 90=North, 180=West...
+let currentRotation = 0; 
 let animationQueue = [];
 let isAnimating = false;
-let activeWalls = []; // Stores current level's walls
+let isAutoPlaying = false; // NEW: Tracks if we are "Running" vs "Stepping"
+let activeWalls = []; 
 
 // --- 3. INITIALIZATION (On Page Load) ---
 window.onload = function() {
@@ -167,35 +135,28 @@ window.onload = function() {
 
     // Load the first level immediately
     loadLevel(0);
-    // Hook up the Reset Button
-document.getElementById("reset-btn").addEventListener("click", function() {
-    // 1. Stop any currently running animation
-    isAnimating = false;
-    animationQueue = [];
-    
-    // 2. Clear any pending timeouts (stops the loop)
-    // (This is a safety measure if you used setTimeout recursively)
-    let highestTimeoutId = setTimeout(";");
-    for (let i = 0; i < highestTimeoutId; i++) {
-        clearTimeout(i);
-    }
 
-    // 3. Re-draw the level (Robot to start, New Random Flag)
-    resetVisuals();
-    
-    // 4. Update the log
-    const out = document.getElementById("output");
-    out.innerHTML = "<div style='color:#e67e22'>Level Reset!</div>";
-});
+    // Hook up the Reset Button
+    document.getElementById("reset-btn").addEventListener("click", function() {
+        isAnimating = false;
+        isAutoPlaying = false;
+        animationQueue = [];
+        
+        let highestTimeoutId = setTimeout(";");
+        for (let i = 0; i < highestTimeoutId; i++) {
+            clearTimeout(i);
+        }
+
+        resetVisuals();
+        const out = document.getElementById("output");
+        out.innerHTML = "<div style='color:#e67e22'>Level Reset!</div>";
+    });
 };
 
 // Called when you pick a new mission from the dropdown
 window.loadLevel = function(index) {
     currentLevel = levels[index];
-    
-    // Update Text
     document.getElementById("mission-desc").innerText = currentLevel.description;
-    
     resetVisuals();
 };
 
@@ -217,6 +178,7 @@ function resetVisuals() {
     // --- 2. RESET STATE ---
     animationQueue = [];
     isAnimating = false;
+    isAutoPlaying = false;
 
     // --- 3. RESET ROBOT ---
     robotX = currentLevel.startX * 40;
@@ -238,7 +200,6 @@ function resetVisuals() {
     const container = document.getElementById("world-container");
     document.querySelectorAll('.wall').forEach(e => e.remove());
     
-    // FIX: Removed 'const' so we update the GLOBAL variable
     activeWalls = currentLevel.walls || []; 
     
     activeWalls.forEach(w => {
@@ -265,39 +226,60 @@ function resetVisuals() {
 }
 
 // --- 4. WASM LOADER ---
-// --- 4. WASM LOADER ---
 const go = new Go();
-
 WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
-    // 1. Start the Go program
     go.run(result.instance);
 
-    // 2. Enable the Run Button
-    const runBtn = document.getElementById("run-btn");
-    runBtn.disabled = false;
-    runBtn.innerText = "▶ Run Code";
-    // runBtn.style.backgroundColor = "#2ecc71"; // Optional: Make it green to show it's ready
-    runBtn.style.cursor = "pointer";
-
+    const runBtn = document.querySelector(".run-btn"); // Assuming class 'run-btn'
+    if(runBtn) {
+        runBtn.disabled = false;
+        runBtn.innerText = "▶ Run Code";
+        runBtn.style.cursor = "pointer";
+    }
     console.log("Wasm loaded and ready!");
 });
 
 // --- 5. SIMULATION ENGINE ---
+
+// Modified to handle both Step and Run modes
 window.addToAnimationQueue = (action) => {
-    // 1. Add the move to the list
     animationQueue.push(action);
-    
-    // 2. GUARD: Only start the loop if it's not already running!
-    if (!isAnimating) {
+    // Only auto-play if the Run button was clicked
+    if (isAutoPlaying && !isAnimating) {
         processQueue();
     }
 };
 
+// "Run Code" Button
 window.runSimulation = function() {
-    // Soft Reset (Keep goal and walls, just reset robot)
-    animationQueue = [];
-    isAnimating = false;
-    
+    isAutoPlaying = true; // Enable auto-loop
+    startCodeExecution();
+}
+
+// "Step" Button
+window.stepSimulation = async function() {
+    // 1. If queue is empty, compile the code first
+    if (animationQueue.length === 0) {
+        console.log("Compiling code for Step Mode...");
+        isAutoPlaying = false; // Disable auto-loop
+        startCodeExecution();
+        
+        // Wait briefly for Go to populate the queue
+        await new Promise(r => setTimeout(r, 100));
+    }
+
+    // 2. Execute just ONE move
+    if (animationQueue.length > 0) {
+        const action = animationQueue.shift();
+        performAction(action);
+    } else {
+        console.log("No more steps.");
+    }
+}
+
+// Shared helper to compile and start
+function startCodeExecution() {
+    // Soft Reset (Robot returns to start)
     robotX = currentLevel.startX * 40;
     robotY = currentLevel.startY * 40;
     currentRotation = 0;
@@ -307,7 +289,7 @@ window.runSimulation = function() {
     el.style.bottom = robotY + "px";
     updateSprite();
     
-    document.getElementById("output").innerHTML = "<div style='color:#888'>Running...</div>";
+    document.getElementById("output").innerHTML = "<div style='color:#888'>Executing...</div>";
 
     let code = document.getElementById("editor").value;
     let result = window.runGoCode(code);
@@ -317,7 +299,105 @@ window.runSimulation = function() {
     }
 }
 
-// Check if moving from current square hits a wall
+// NEW: Core logic for a single move (Used by both Run and Step)
+async function performAction(action) {
+    const el = document.getElementById("robot");
+
+    if (action === "move" || action === "moveForward") {
+        const heading = currentRotation % 360;
+        let nextX = robotX;
+        let nextY = robotY;
+
+        // Calculate next position
+        if (heading === 0) nextX += 40;
+        else if (heading === 90) nextY += 40;
+        else if (heading === 180) nextX -= 40;
+        else if (heading === 270) nextY -= 40;
+
+        // --- CRASH CHECK ---
+        if (checkCollision(nextX, nextY, heading)) {
+            log("💥 CRASH! Hit a wall!", "error");
+            el.style.transform = "scale(0.8)";
+            setTimeout(() => el.style.transform = "scale(1)", 200);
+            
+            animationQueue = []; 
+            isAnimating = false;
+            
+            setTimeout(() => {
+                showGameOver("💥 CRASH!", "You hit a wall!");
+            }, 500);
+            return false; // Stop
+        }
+
+        // Move Valid
+        robotX = nextX;
+        robotY = nextY;
+        el.style.left = robotX + "px";
+        el.style.bottom = robotY + "px";
+
+        // --- INSTANT WIN CHECK ---
+        const gX = Math.round(robotX / 40);
+        const gY = Math.round(robotY / 40);
+        
+        if (gX === currentLevel.currentGoalX && gY === currentLevel.currentGoalY) {
+            log("🏆 SUCCESS! You found the flag!", "success");
+            animationQueue = [];
+            isAnimating = false;
+            setTimeout(() => {
+                showSuccessModal(); 
+            }, 500);
+            return false; // Stop (Win)
+        }
+        
+    } else if (action === "turnLeft") {
+        currentRotation += 90;
+        // Normalize rotation 0-360
+        if (currentRotation >= 360) currentRotation -= 360;
+        updateSprite();
+
+    } else if (action === "turnRight") {
+        currentRotation -= 90;
+        if (currentRotation < 0) currentRotation += 360;
+        updateSprite();
+    }
+
+    return true; // Keep going
+}
+
+// The Automatic Loop (Only used when Run is clicked)
+async function processQueue() {
+    if (animationQueue.length === 0) {
+        if (!isAnimating) return;
+        isAnimating = false;
+        
+        // Final Win/Loss Check for Run Mode
+        const gX = Math.round(robotX / 40);
+        const gY = Math.round(robotY / 40);
+        if (gX === currentLevel.currentGoalX && gY === currentLevel.currentGoalY) {
+             // Already handled in performAction, but safety check
+        } else {
+            log("❌ Game Over: Robot stopped!", "error");
+            setTimeout(() => {
+                showGameOver("🛑 OUT OF POWER", "You stopped before reaching the flag.");
+            }, 500);
+        }
+        return;
+    }
+
+    isAnimating = true;
+    const action = animationQueue.shift(); // Get next move
+
+    // Run Logic
+    const keepGoing = await performAction(action);
+
+    // Recurse
+    if (keepGoing) {
+        console.log("Waiting " + GAME_SPEED + "ms...");
+        await new Promise(r => setTimeout(r, GAME_SPEED)); 
+        processQueue(); 
+    }
+}
+
 function checkCollision(targetX, targetY, direction) {
     const currentGridX = Math.round(robotX / 40);
     const currentGridY = Math.round(robotY / 40);
@@ -327,122 +407,15 @@ function checkCollision(targetX, targetY, direction) {
 
     // 2. Obstacles
     for (let w of activeWalls) {
-        
-        // --- CHECK EAST WALLS (Vertical) ---
-        // If facing East (0), check wall on my Right
+        // East/Vertical Walls
         if (direction === 0 && w.side === 'E' && w.x === currentGridX && w.y === currentGridY) return true;
-        // If facing West (180), check wall on neighbor's Right
         if (direction === 180 && w.side === 'E' && w.x === (currentGridX - 1) && w.y === currentGridY) return true;
 
-        // --- CHECK NORTH WALLS (Horizontal/Ceiling) ---
-        // If facing North (90), check wall on my Top
+        // North/Horizontal Walls
         if (direction === 90 && w.side === 'N' && w.x === currentGridX && w.y === currentGridY) return true;
-        // If facing South (270), check wall on neighbor's Top (the cell below me)
         if (direction === 270 && w.side === 'N' && w.x === currentGridX && w.y === (currentGridY - 1)) return true;
     }
     return false;
-}
-
-async function processQueue() {
-    // 1. CHECK IF QUEUE IS EMPTY (Animation Finished)
-    if (animationQueue.length === 0) {
-        if (!isAnimating) return; 
-        isAnimating = false;
-
-        const gridX = Math.round(robotX / 40);
-        const gridY = Math.round(robotY / 40);
-
-        // CHECK: Is the robot at the goal?
-        if (gridX === currentLevel.currentGoalX && gridY === currentLevel.currentGoalY) {
-            // --- VICTORY ---
-            log("🏆 SUCCESS! Goal Reached!", "success");
-            const el = document.getElementById("robot");
-            el.style.transform = "scale(1.2)";
-            setTimeout(() => el.style.transform = "scale(1)", 200);
-
-            // --- NEW: Trigger the separate Success Modal ---
-            setTimeout(() => {
-                showSuccessModal(); 
-            }, 500);
-        } else {
-            // --- FAILURE: RAN OUT OF MOVES ---
-            log("❌ Game Over: Robot stopped!", "error");
-            
-            // Wait 500ms then show the "Stopped" Modal
-            setTimeout(() => {
-                showGameOver("🛑 OUT OF POWER", "You stopped before reaching the flag. Check your loops!");
-            }, 500);
-        }
-        return;
-    }
-
-    isAnimating = true;
-    const action = animationQueue.shift();
-    const el = document.getElementById("robot");
-
-    // 2. HANDLE MOVEMENT
-    if (action === "move") {
-         const heading = currentRotation % 360;
-         let nextX = robotX;
-         let nextY = robotY;
-
-         // Calculate next position
-         if (heading === 0) nextX += 40;
-         else if (heading === 90) nextY += 40;
-         else if (heading === 180) nextX -= 40;
-         else if (heading === 270) nextY -= 40;
-
-         // --- CRASH CHECK ---
-         if (checkCollision(nextX, nextY, heading)) {
-             log("💥 CRASH! Hit a wall!", "error");
-             
-             // Visual Bump
-             el.style.transform = "scale(0.8)";
-             setTimeout(() => el.style.transform = "scale(1)", 200);
-             
-             // Stop everything
-             animationQueue = []; 
-             isAnimating = false;
-             
-             // Wait 500ms then show the "Crash" Modal
-             setTimeout(() => {
-                 showGameOver("💥 CRASH!", "You hit a wall! The robot has been damaged.");
-             }, 500);
-             
-             return; // Exit function immediately
-         } else {
-             // Move is Valid
-             robotX = nextX;
-             robotY = nextY;
-             el.style.left = robotX + "px";
-             el.style.bottom = robotY + "px";
-
-             // --- INSTANT WIN CHECK ---
-             // (If robot steps on flag while moving, win immediately)
-             const gX = Math.round(robotX / 40);
-             const gY = Math.round(robotY / 40);
-             
-             if (gX === currentLevel.currentGoalX && gY === currentLevel.currentGoalY) {
-                 log("🏆 SUCCESS! You found the flag!", "success");
-                 animationQueue = []; // Stop remaining moves
-                 isAnimating = false;
-                 // --- NEW: Trigger the separate Success Modal ---
-                setTimeout(() => {
-                    showSuccessModal(); 
-                }, 500);
-                 return;
-             }
-         }
-         
-    } else if (action === "turnLeft") {
-         currentRotation += 90;
-         updateSprite();
-    }
-
-    // 3. RECURSIVE LOOP (Run next step)
-    console.log("Waiting " + GAME_SPEED + "ms...");
-    await new Promise(r => setTimeout(r, GAME_SPEED)); 
-    processQueue(); 
 }
 
 function updateSprite() {
@@ -466,40 +439,33 @@ function log(msg, type="info") {
     out.scrollTop = out.scrollHeight;
 }
 
+// --- MODAL FUNCTIONS ---
+
 function showGameOver(title, reason) {
     const modal = document.getElementById("game-over-modal");
-    
-    // Update the Title (e.g., "CRASH!" or "STOPPED")
-    const titleEl = document.getElementById("game-over-title");
-    if(titleEl) titleEl.innerText = title;
-
-    // Update the Reason
-    const reasonEl = document.getElementById("game-over-reason");
-    if(reasonEl) reasonEl.innerText = reason;
-    
+    document.getElementById("game-over-title").innerText = title;
+    document.getElementById("game-over-reason").innerText = reason;
     modal.classList.remove("hidden");
 }
 
 window.closeModalAndReset = function() {
-    const modal = document.getElementById("game-over-modal");
-    modal.classList.add("hidden");
-    
-    // Reset the robot position immediately
+    document.getElementById("game-over-modal").classList.add("hidden");
     resetVisuals();
     log("Robot repaired and reset.", "info");
 }
 
-// --- SUCCESS MODAL FUNCTIONS ---
-
 function showSuccessModal() {
-    const modal = document.getElementById("success-modal");
-    modal.classList.remove("hidden");
+    document.getElementById("success-modal").classList.remove("hidden");
 }
 
 window.closeSuccessModal = function() {
-    const modal = document.getElementById("success-modal");
-    modal.classList.add("hidden");
-    
-    // We do NOT reset the robot here. 
-    // This leaves the robot standing on the flag so you can enjoy your victory!
+    document.getElementById("success-modal").classList.add("hidden");
+}
+
+window.showInstructions = function() {
+    document.getElementById("instructions-modal").classList.remove("hidden");
+}
+
+window.closeInstructions = function() {
+    document.getElementById("instructions-modal").classList.add("hidden");
 }
