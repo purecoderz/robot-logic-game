@@ -11,17 +11,26 @@ const levels = [
     },
 
     // --- ID 1 ---
-    {
+   {
         id: 1,
         name: "2. The Hurdles",
-        description: "Jump over the walls. Don't go too high!",
+        description: "Jump over the walls. You must come down between them!",
         startX: 0, startY: 0,
         goalX: 8, goalY: 0,
         walls: [
-            // Vertical Hurdles
-            {x: 1, y: 0, side: 'E'}, {x: 3, y: 0, side: 'E'},
-            {x: 5, y: 0, side: 'E'}, {x: 7, y: 0, side: 'E'},
-            // Ceiling (Height Limit)
+            // 1. The Ground Hurdles (Blocks moving forward on the ground)
+            {x: 1, y: 0, side: 'E'}, 
+            {x: 3, y: 0, side: 'E'},
+            {x: 5, y: 0, side: 'E'}, 
+            {x: 7, y: 0, side: 'E'},
+
+            // 2. NEW: The "Air Walls" (Blocks flying across the top)
+            // These force the robot to go DOWN at x=2, x=4, and x=6
+            {x: 2, y: 1, side: 'E'}, 
+            {x: 4, y: 1, side: 'E'},
+            {x: 6, y: 1, side: 'E'},
+
+            // 3. The Ceiling (Height Limit)
             {x: 0, y: 1, side: 'N'}, {x: 1, y: 1, side: 'N'},
             {x: 2, y: 1, side: 'N'}, {x: 3, y: 1, side: 'N'},
             {x: 4, y: 1, side: 'N'}, {x: 5, y: 1, side: 'N'},
@@ -31,42 +40,74 @@ const levels = [
     },
 
     // --- ID 2 ---
+    // --- ID 2 ---
     {
         id: 2,
         name: "3. Lucky Hurdles",
-        description: "The flag hides in the gaps! Jump and check.",
+        description: "The flag hides in the gaps! You must jump down to check.",
         startX: 0, startY: 0,
         possibleGoals: [
             {x: 2, y: 0}, {x: 4, y: 0}, {x: 6, y: 0}, {x: 8, y: 0}
         ],
         walls: [
+            // --- 1. The Ground Hurdles ---
             {x: 1, y: 0, side: 'E'}, 
-            {x: 0, y: 1, side: 'N'}, {x: 1, y: 1, side: 'N'}, {x: 2, y: 1, side: 'N'},
             {x: 3, y: 0, side: 'E'}, 
-            {x: 2, y: 1, side: 'N'}, {x: 3, y: 1, side: 'N'}, {x: 4, y: 1, side: 'N'},
             {x: 5, y: 0, side: 'E'}, 
-            {x: 4, y: 1, side: 'N'}, {x: 5, y: 1, side: 'N'}, {x: 6, y: 1, side: 'N'},
-            {x: 7, y: 0, side: 'E'}, 
+            {x: 7, y: 0, side: 'E'},
+
+            // --- 2. NEW: The Air Walls (Anti-Cheat) ---
+            // These block the air path at x=2, x=4, x=6
+            // The robot hits these if it tries to stay flying!
+            {x: 2, y: 1, side: 'E'}, 
+            {x: 4, y: 1, side: 'E'}, 
+            {x: 6, y: 1, side: 'E'}, 
+
+            // --- 3. The Ceiling ---
+            {x: 0, y: 1, side: 'N'}, {x: 1, y: 1, side: 'N'}, {x: 2, y: 1, side: 'N'},
+            {x: 3, y: 1, side: 'N'}, {x: 4, y: 1, side: 'N'}, {x: 5, y: 1, side: 'N'},
             {x: 6, y: 1, side: 'N'}, {x: 7, y: 1, side: 'N'}, {x: 8, y: 1, side: 'N'}
         ]
-    },
+    },,
 
+    // --- ID 3 ---
     // --- ID 3 ---
     {
         id: 3,
         name: "4. Uneven Hurdles",
-        description: "Watch out! Some walls are higher than others.",
+        description: "Some walls are higher. You must climb up AND down!",
         startX: 0, startY: 0,
         goalX: 9, goalY: 0,
         walls: [
-            {x: 1, y: 0, side: 'E'}, 
+            // --- 1. The Ground Hurdles ---
+            {x: 1, y: 0, side: 'E'}, // Short Wall
+            
+            {x: 3, y: 0, side: 'E'}, {x: 3, y: 1, side: 'E'}, // Tall Wall
+            
+            {x: 5, y: 0, side: 'E'}, // Short Wall
+            
+            {x: 7, y: 0, side: 'E'}, {x: 7, y: 1, side: 'E'}, // Tall Wall
+
+            // --- 2. NEW: The Anti-Cheat Air Walls ---
+            
+            // GAP x=4: Between Tall Wall (x3) and Short Wall (x5)
+            // Robot is at y=2 after crossing x3.
+            // We block y=2 so it MUST go down to y=1 to prepare for the short wall.
+            {x: 4, y: 2, side: 'E'}, 
+
+            // GAP x=8: After the final Tall Wall (x7)
+            // Forces the robot down to the goal at y=0.
+            {x: 8, y: 2, side: 'E'},
+            {x: 8, y: 1, side: 'E'},
+
+            // --- 3. The Ceilings (Visual & Limit) ---
             {x: 0, y: 1, side: 'N'}, {x: 1, y: 1, side: 'N'}, {x: 2, y: 1, side: 'N'},
-            {x: 3, y: 0, side: 'E'}, {x: 3, y: 1, side: 'E'},
-            {x: 3, y: 2, side: 'N'}, {x: 4, y: 2, side: 'N'},
-            {x: 5, y: 0, side: 'E'},
-            {x: 5, y: 1, side: 'N'}, {x: 6, y: 1, side: 'N'},
-            {x: 7, y: 0, side: 'E'}, {x: 7, y: 1, side: 'E'},
-            {x: 7, y: 2, side: 'N'}, {x: 8, y: 2, side: 'N'}
+            
+            {x: 3, y: 2, side: 'N'}, {x: 4, y: 2, side: 'N'}, // Ceiling rises for Tall Wall
+            
+            {x: 5, y: 1, side: 'N'}, {x: 6, y: 1, side: 'N'}, // Ceiling drops for Short Wall
+            
+            {x: 7, y: 2, side: 'N'}, {x: 8, y: 2, side: 'N'}  // Ceiling rises again
         ]
     },
 
