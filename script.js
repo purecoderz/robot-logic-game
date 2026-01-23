@@ -107,7 +107,15 @@ window.loadLevel = function(index) {
     // Update Description
     const descLabel = document.getElementById("mission-desc");
     if(descLabel) {
-        descLabel.innerText = currentLevel.description;
+        let text = currentLevel.description;
+        
+        // Append warning if restrictions exist
+        if (currentLevel.restricted && currentLevel.restricted.length > 0) {
+            text += " <span style='color: #e74c3c; font-weight: bold;'>[DISABLED: " + currentLevel.restricted.join(", ") + "]</span>";
+        }
+        
+        // Use innerHTML so the span tag works
+        descLabel.innerHTML = text;
     }
     
     resetVisuals();
@@ -154,6 +162,46 @@ function resetVisuals() {
     robot.style.bottom = robotY + "px";
     updateSprite(); 
 
+    // --- NEW: GENERATE RANDOM HURDLES ---
+    if (currentLevel.randomHurdles) {
+        currentLevel.walls = []; // Clear previous walls
+        
+        // Locations of the hurdles
+        const possibleXPatterns = [[1, 3, 5, 7], [2, 4, 6], [1, 5], 
+        [2, 6], [1, 3, 6], [1, 4, 7], [3, 5, 7], [1, 2, 3], [1, 6], [2, 5]];
+        let hurdleX = [1, 3, 5, 7]
+        if (currentLevel.randomHurdlesX) {
+            hurdleX = possibleXPatterns[Math.floor(Math.random() * possibleXPatterns.length)];
+        }
+        
+        
+        hurdleX.forEach(x => {
+            // Pick a random height between 1 and 3 for the wall
+            const h = Math.floor(Math.random() * 7) + 1; 
+            
+            // 1. Build the Hurdle (The Wall on the Ground)
+            // If height is 2, we build walls at y=0 and y=1.
+            for (let y = 0; y < h; y++) {
+                currentLevel.walls.push({x: x, y: y, side: 'E'});
+            }
+
+            // 2. Build the "Sky Wall" (The Anti-Cheat)
+            // This builds a wall from the top down, stopping just above the hurdle.
+            // It forces the robot to be at EXACTLY height 'h' or 'h+1' to pass.
+            // We start at h + 2 to give a tiny bit of headroom (optional), 
+            // or h + 1 to make it a super tight squeeze.
+            
+            // Let's use h + 1 for a "Tight Squeeze" (Robot must be exactly on top of the wall)
+            for (let y = h + 1; y < 10; y++) {
+                currentLevel.walls.push({x: x, y: y, side: 'E'});
+            }
+
+            // Result: Robot crosses hurdle -> Hits this wall -> Must go down to y=0 to pass.
+            for (let y = 1; y < 10; y++) {
+                currentLevel.walls.push({x: x + 1, y: y, side: 'E'});
+            }
+        });
+    }
     // --- 4. DRAW GOAL ---
     const goal = document.getElementById("goal");
     goal.style.display = "block";
@@ -237,7 +285,15 @@ window.stepSimulation = async function() {
 }
 
 function startCodeExecution() {
-    // 1. Visual Reset
+
+    const oldRobot = document.getElementById("robot");
+    if(oldRobot) oldRobot.style.transition = 'none'; // Stop current movement instantly
+
+    // --- 2. Get Code & Check Restrictions ---
+    const code = document.getElementById("editor").value;
+    if (!checkRestrictedCommands(code, currentLevel)) return;
+
+    // --- 3. Visual Reset ---
     robotX = currentLevel.startX * 40;
     robotY = currentLevel.startY * 40;
     currentRotation = 0;
@@ -245,18 +301,27 @@ function startCodeExecution() {
     const el = document.getElementById("robot");
     el.style.left = robotX + "px";
     el.style.bottom = robotY + "px";
-    updateSprite();
+    el.className = "robot facing-east"; 
     
+    // Restore transition after reset
+    setTimeout(() => {
+        el.style.transition = 'left 0.3s linear, bottom 0.3s linear';
+    }, 50);
+
     document.getElementById("output").innerHTML = "<div style='color:#888'>Executing...</div>";
 
-    // 2. Prepare Data for Go
-    let code = document.getElementById("editor").value;
-    let wallsJson = JSON.stringify(currentLevel.walls);
-    let goalX = currentLevel.currentGoalX;
-    let goalY = currentLevel.currentGoalY;
+    // --- 4. Prepare Args ---
+    const wallsJson = JSON.stringify(currentLevel.walls);
+    // Use the *Current* calculated goal for this run
+    const gX = currentLevel.currentGoalX; 
+    const gY = currentLevel.currentGoalY;
+    const sX = currentLevel.startX || 0;
+    const sY = currentLevel.startY || 0;
+    const sDir = 0; 
 
-    // 3. Call Go
-    let result = window.runGoCode(code, wallsJson, goalX, goalY);
+    // --- 5. Run Go Code ---
+    // Note: We use the active goal (gX, gY) which handles random goals correctly
+    const result = window.runGoCode(code, wallsJson, gX, gY, sX, sY, sDir);
     
     if (result && result.startsWith("Code Error")) {
         log(result, "error");
@@ -321,6 +386,8 @@ async function processQueue() {
         const gY = Math.round(robotY / 40);
         if (gX !== currentLevel.currentGoalX || gY !== currentLevel.currentGoalY) {
             log("Stopped.", "info");
+            setTimeout(() => showGameOver("💻 Out of Code!", "You ran out of code!"), 500);
+
         }
         return;
     }
@@ -376,6 +443,25 @@ function log(msg, type="info") {
     out.scrollTop = out.scrollHeight;
 }
 
+function checkRestrictedCommands(code, level) {
+    // If no restrictions defined, return valid (true)
+    if (!level.restricted || level.restricted.length === 0) return true;
+
+    // Loop through each banned command
+    for (let command of level.restricted) {
+        // Create a Regex to find the word boundary (\b)
+        // This ensures "turnRight" matches, but "myturnRightFunc" does not.
+        // The 'g' flag isn't strictly needed for .test(), but good practice.
+        const regex = new RegExp(`\\b${command}\\b`);
+        
+        if (regex.test(code)) {
+            log(`🚫 ERROR: The command '${command}()' is disabled for this level!`, "error");
+            return false; // Validation failed
+        }
+    }
+    return true; // All checks passed
+}
+
 function showGameOver(title, reason) {
     const m = document.getElementById("game-over-modal");
     if(m) {
@@ -387,6 +473,7 @@ function showGameOver(title, reason) {
 function showSuccessModal() {
     const m = document.getElementById("success-modal");
     if(m) m.classList.remove("hidden");
+    
 }
 window.closeModalAndReset = function() {
     const m = document.getElementById("game-over-modal");
@@ -396,4 +483,5 @@ window.closeModalAndReset = function() {
 window.closeSuccessModal = function() {
     const m = document.getElementById("success-modal");
     if(m) m.classList.add("hidden");
+    resetVisuals();
 }

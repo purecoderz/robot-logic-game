@@ -5,8 +5,10 @@ const levels = [
         name: "1. Free Roam",
         description: "The flag moves randomly! Find it.",
         startX: 0, startY: 0,
-        randomGoal: true, 
-        walls: [] 
+        randomGoal: true,
+        walls: [],
+        // NEW: Allow everything
+        restricted: ["wallInFront", "atGoal", "wallByRight", "wallByLeft"] 
     },
 
     // --- LEVEL 2: The Hurdles ---
@@ -31,7 +33,8 @@ const levels = [
             {x: 4, y: 1, side: 'N'}, {x: 5, y: 1, side: 'N'},
             {x: 6, y: 1, side: 'N'}, {x: 7, y: 1, side: 'N'},
             {x: 8, y: 1, side: 'N'}, {x: 9, y: 1, side: 'N'}
-        ]
+        ],
+        restricted: ["wallInFront", "atGoal", "wallByRight", "wallByLeft"] 
     },
 
     // --- LEVEL 3: Lucky Hurdles ---
@@ -43,6 +46,7 @@ const levels = [
         possibleGoals: [
             {x: 2, y: 0}, {x: 4, y: 0}, {x: 6, y: 0}, {x: 8, y: 0}
         ],
+        restricted: [],
         walls: [
             {x: 1, y: 0, side: 'E'}, 
             {x: 3, y: 0, side: 'E'}, 
@@ -56,44 +60,31 @@ const levels = [
             {x: 0, y: 1, side: 'N'}, {x: 1, y: 1, side: 'N'}, {x: 2, y: 1, side: 'N'},
             {x: 3, y: 1, side: 'N'}, {x: 4, y: 1, side: 'N'}, {x: 5, y: 1, side: 'N'},
             {x: 6, y: 1, side: 'N'}, {x: 7, y: 1, side: 'N'}, {x: 8, y: 1, side: 'N'}
-        ]
+        ],
+        restricted: ["wallInFront", "wallByRight", "wallByLeft"] 
     },
 
     // --- LEVEL 4: Uneven Hurdles ---
     {
         id: 3,
         name: "4. Uneven Hurdles",
-        description: "Some walls are higher. You must climb up AND down!",
+        description: "The walls change height every time! Climb up AND down.",
         startX: 0, startY: 0,
         goalX: 9, goalY: 0,
-        walls: [
-            {x: 1, y: 0, side: 'E'}, 
-            {x: 3, y: 0, side: 'E'}, {x: 3, y: 1, side: 'E'}, 
-            {x: 5, y: 0, side: 'E'}, 
-            {x: 7, y: 0, side: 'E'}, {x: 7, y: 1, side: 'E'}, 
-            // Anti-Cheat Air Walls
-            {x: 4, y: 2, side: 'E'}, 
-            {x: 8, y: 2, side: 'E'}, {x: 8, y: 1, side: 'E'},
-            // Ceilings
-            {x: 0, y: 1, side: 'N'}, {x: 1, y: 1, side: 'N'}, {x: 2, y: 1, side: 'N'},
-            {x: 3, y: 2, side: 'N'}, {x: 4, y: 2, side: 'N'}, 
-            {x: 5, y: 1, side: 'N'}, {x: 6, y: 1, side: 'N'}, 
-            {x: 7, y: 2, side: 'N'}, {x: 8, y: 2, side: 'N'}
-        ]
+        randomHurdles: true, // <--- New Flag
+        walls: []            // Leave empty, we will fill this with code
     },
 
     // --- LEVEL 5: The Corner ---
     {
         id: 4,
-        name: "5. The Corner",
-        description: "You need to turn left to reach this flag.",
+        name: "5. Hard Hurdles",
+        description: "The walls change height every time! Climb up AND down.",
         startX: 0, startY: 0,
-        goalX: 0, goalY: 2,
-        walls: [
-            {x: 0, y: 0, side: 'E'}, 
-            {x: 0, y: 1, side: 'E'},
-            {x: 0, y: 2, side: 'E'} 
-        ]
+        goalX: 9, goalY: 0,
+        randomHurdles: true, // <--- New Flag
+        randomHurdlesX: true,
+        walls: []            // Leave empty, we will fill this with code
     },
 
     // --- LEVEL 6: The Zig Zag ---
