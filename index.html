@@ -13,10 +13,19 @@
         <h1>Go Learning Lab</h1>
         
         <div class="mission-controls">
+            <div class="speed-control">
+                <span style="font-size: 0.8rem; color: #666;">🐢</span>
+                <input type="range" id="speed-slider" min="1" max="10" value="5">
+                <span style="font-size: 0.8rem; color: #666;">🐇</span>
+            </div>
             <button id="help-btn" onclick="showInstructions()">❓ Help</button>
             <select id="mission-select" onchange="loadLevel(this.value)">
                 </select>
-            <span id="mission-desc" class="badge">Loading missions...</span>
+            <button id="reset-btn">Reset Level ↺</button>
+        </div>
+        
+        <div style="position: absolute; top: 65px; left: 20px; font-size: 0.9rem; color: #666;">
+            Mission: <span id="mission-desc" style="font-weight: bold; color: #333;">Loading...</span>
         </div>
     </header>
 
@@ -27,88 +36,123 @@
 package main
 
 func main() {
-    // Try to solve Level 2 (The Hurdles)
-    Move()
+    // Basic Movement
+    move()
+    move()
     
+    // Logic Example:
+    // if wallInFront() {
+    //     turnLeft()
+    // }
 }
 </textarea>
             <div class="editor-footer">
-                <button id="step-btn" class="secondary-btn" onclick="stepSimulation()" style="margin-right: 10px;">👣 Step</button>
+                <button id="step-btn" class="step-btn" onclick="stepSimulation()">👣 Step</button>
                 <button id="run-btn" class="run-btn" onclick="runSimulation()" disabled>Loading...</button>
-               
-                <button id="reset-btn">Reset Level ↺</button>
             </div>
         </section>
 
         <section class="world-pane">
             <div id="world-container">
                 <div id="goal"></div>
-                
                 <div id="robot" class="facing-east"></div>
             </div>
+            
             <div id="output" class="console-log">
-                <div style="color:#888">> Ready...</div>
+                <div style="color:#888">> System Ready...</div>
             </div>
         </section>
     </main>
 
-   <div id="game-over-modal" class="modal hidden">
-    <div class="modal-content">
-        <h2 id="game-over-title" style="color: #e74c3c; margin-bottom: 10px;">Game Over</h2>
-        
-        <p id="game-over-reason">Mission Failed.</p>
-        
-        <br>
-        <button class="run-btn" onclick="closeModalAndReset()">Try Again</button>
-    </div>
-</div>
-
-<div id="success-modal" class="modal hidden">
-    <div class="modal-content success-theme">
-        <h2 id="success-title">🎉 Level Complete!</h2>
-        <p id="success-message">Great job! The robot reached the flag.</p>
-        
-        <div class="modal-buttons">
-            <button class="primary-btn" onclick="closeSuccessModal()">OK, Cool!</button>
+    <div id="game-over-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="game-over-title" style="color: #e74c3c; margin-bottom: 10px;">Game Over</h2>
+            <p id="game-over-reason">Mission Failed.</p>
+            <br>
+            <button class="run-btn" onclick="closeModalAndReset()">Try Again</button>
         </div>
     </div>
-</div>
 
-<div id="instructions-modal" class="modal hidden">
-    <div class="modal-content info-theme">
-        <h2>📚 Command Reference</h2>
-        <p>Use these functions to control the robot:</p>
+    <div id="success-modal" class="modal hidden">
+        <div class="modal-content success-theme">
+            <h2 id="success-title">🎉 Level Complete!</h2>
+            <p id="success-message">Great job! The robot reached the flag.</p>
+            <div class="modal-buttons">
+                <button class="primary-btn" onclick="closeSuccessModal()">OK, Cool!</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="help-modal" class="modals hidden">
+    <div class="modals-content help-theme">
         
-        <ul class="command-list">
-            <li>
+        <div class="modals-header">
+            <h2>📚 Mission Instructions</h2>
+            <span class="close-icon" onclick="toggleHelp()">×</span>
+        </div>
+
+        <div class="modals-body">
+            <p>Write Go code to guide the robot to the <strong>Red Flag</strong>. Avoid walls and obstacles!</p>
+
+            <h3>🕹️ Basic Movement</h3>
+            <div class="command-block">
                 <code>move()</code>
-                <span>Moves the robot one step in the direction it is facing.</span>
-            </li>
-            <li>
+                <span>Moves the robot one step forward in the direction it is facing.</span>
+            </div>
+            <div class="command-block">
                 <code>turnLeft()</code>
-                <span>Rotates the robot 90 degrees to the left.</span>
-            </li>
-        </ul>
+                <span>Rotates the robot 90 degrees to the left (Counter-Clockwise).</span>
+            </div>
 
-        <div class="modal-buttons">
-            <button class="primary-btn" onclick="closeInstructions()">Got it!</button>
+            <h3>👀 Sensors (Logic)</h3>
+            <div class="command-block">
+                <code>wallInFront()</code>
+                <span>Returns <strong>true</strong> if there is a wall directly ahead.</span>
+            </div>
+            <div class="command-block">
+                <code>atGoal()</code>
+                <span>Returns <strong>true</strong> if the robot is standing on the flag.</span>
+            </div>
+
+            <h3>💡 Tips</h3>
+            <ul class="tips-list">
+                <li>You can define your own functions using <code>func myName() { ... }</code>.</li>
+                <li>The robot crashes if you run into a wall!</li>
+                <li>Use the <strong>Speed Slider</strong> in the header to speed up testing.</li>
+            </ul>
+        </div>
+
+        <div class="modals-footer">
+            <button class="primary-btn" onclick="toggleHelp()">Got it!</button>
         </div>
     </div>
 </div>
 
+    <script src="level.js"></script>
     <script src="script.js"></script>
+    
     <script>
-        // --- INSTRUCTION MODAL FUNCTIONS ---
+        // Toggle Help Modal
+        window.showInstructions = function() {
+            document.getElementById("help-modal").classList.remove("hidden");
+        }
 
-window.showInstructions = function() {
-    const modal = document.getElementById("instructions-modal");
-    modal.classList.remove("hidden");
-}
+        window.toggleHelp = function() {
+            const m = document.getElementById("help-modal");
+            if(m.classList.contains("hidden")) {
+                m.classList.remove("hidden");
+            } else {
+                m.classList.add("hidden");
+            }
+        }
 
-window.closeInstructions = function() {
-    const modal = document.getElementById("instructions-modal");
-    modal.classList.add("hidden");
-}
+        // Close modal when clicking outside the box
+        window.onclick = function(event) {
+            const m = document.getElementById("help-modal");
+            if (event.target === m) {
+                m.classList.add("hidden");
+            }
+        }
     </script>
 </body>
 </html>

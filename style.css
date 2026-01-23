@@ -3,7 +3,9 @@
     --editor-bg: #1e1e1e;
     --sidebar-bg: #ffffff;
     --accent-color: #00add8;
+    --step-color: #8e44ad; /* New: Purple for Step Button */
     --text-color: #333;
+    --wall-color: #34495e; /* New: Maze Wall Color */
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -70,37 +72,13 @@ main {
 }
 
 @media (max-width: 900px) {
-    /* 1. Allow the full page to scroll on mobile */
-    body {
-        height: auto;
-        overflow-y: auto;
-    }
-
-    /* 2. Stack elements vertically */
-    main { 
-        flex-direction: column; 
-        height: auto;          /* Let the content define the height */
-        overflow: visible;     /* No internal scrollbars, scroll the whole page */
-    }
-
-    /* 3. CRITICAL: Force the editor to have height */
-    .editor-pane {
-        min-height: 400px; /* Give it physical space so it doesn't collapse */
-        flex: none;        /* Disable flexing behavior here */
-    }
-    
-    /* 4. Ensure the world pane doesn't shrink either */
-    .world-pane {
-        flex: none;
-        width: 100%;
-        margin-bottom: 20px;
-    }
-    
-    /* 5. Center the game board on small screens */
-    #world-container {
-        max-width: 100%; /* Prevent it from going off-screen */
-    }
+    body { height: auto; overflow-y: auto; }
+    main { flex-direction: column; height: auto; overflow: visible; }
+    .editor-pane { min-height: 400px; flex: none; }
+    .world-pane { flex: none; width: 100%; margin-bottom: 20px; }
+    #world-container { max-width: 100%; }
 }
+
 /* --- EDITOR STYLES --- */
 .editor-pane {
     flex: 1;
@@ -133,24 +111,35 @@ textarea#editor {
     outline: none;
 }
 
+/* Updated Footer to support multiple buttons */
 .editor-footer {
     padding: 10px;
     background: #252526;
     display: flex;
     justify-content: flex-end;
+    gap: 10px; /* Space between Run and Step */
 }
 
-button.run-btn {
-    background-color: var(--accent-color);
-    color: white;
+/* General Button Styles */
+button.run-btn, button.step-btn {
     border: none;
     padding: 10px 24px;
     border-radius: 4px;
     font-weight: bold;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background 0.2s, transform 0.1s;
+    color: white;
 }
+
+button.run-btn { background-color: var(--accent-color); }
 button.run-btn:hover { background-color: #008bb0; }
+
+/* New Step Button Style */
+button.step-btn { background-color: var(--step-color); }
+button.step-btn:hover { background-color: #7d3c98; }
+
+button:active { transform: translateY(1px); }
+button:disabled { background-color: #555; cursor: not-allowed; }
 
 /* --- WORLD STYLES --- */
 .world-pane {
@@ -169,6 +158,7 @@ button.run-btn:hover { background-color: #008bb0; }
     width: 400px; 
     height: 400px;
     background-color: #f9f9f9;
+    /* Grid Pattern */
     background-image: 
         linear-gradient(#e5e5e5 1px, transparent 1px),
         linear-gradient(90deg, #e5e5e5 1px, transparent 1px);
@@ -179,10 +169,9 @@ button.run-btn:hover { background-color: #008bb0; }
 
 /* --- THE GOAL FLAG --- */
 #goal {
-    width: 40px; 
-    height: 40px;
+    width: 40px; height: 40px;
     position: absolute;
-    display: none; /* Hidden until level load */
+    display: none;
     z-index: 5;
 }
 #goal::after {
@@ -191,23 +180,31 @@ button.run-btn:hover { background-color: #008bb0; }
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    height: 100%;
+    width: 100%; height: 100%;
 }
 
-/* --- WALLS / HURDLES --- */
+/* --- WALLS (Updated for Maze Look) --- */
 .wall {
     position: absolute;
-    background-color: #c0392b; /* Red Hurdle Color */
+    background-color: var(--wall-color); /* Dark Grey/Blue */
     z-index: 8;
+    border-radius: 2px;
 }
 
 /* Vertical Wall (to the right of a cell) */
 .wall-vertical {
     width: 6px;
     height: 40px; 
-    margin-left: -3px; 
+    margin-left: -3px; /* Centered on grid line */
 }
+
+/* Horizontal Wall (top/bottom of cell) */
+.wall-horizontal {
+    width: 40px;
+    height: 6px;
+    margin-top: -3px; /* Centered on grid line */
+}
+
 
 /* --- THE ROBOT SPRITE --- */
 #robot {
@@ -216,15 +213,18 @@ button.run-btn:hover { background-color: #008bb0; }
     position: absolute;
     left: 0; bottom: 0;
     z-index: 10;
-    /* ADD THIS LINE TO MAKE IT GLIDE SMOOTHLY */
-    transition: left 0.5s linear, bottom 0.5s linear, transform 0.2s;
     
+    /* Matches the JS GAME_SPEED of 500ms for smooth movement */
+    transition: left 0.5s linear, bottom 0.5s linear;
+    
+    /* The SVG Sprite Image */
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="40" viewBox="0 0 160 40"><g transform="translate(10,5)"><rect x="4" y="0" width="14" height="14" rx="2" fill="%232ecc71" stroke="%2327ae60" stroke-width="2"/><rect x="6" y="14" width="10" height="12" fill="%232ecc71" stroke="%2327ae60" stroke-width="2"/><rect x="8" y="26" width="6" height="8" fill="%232ecc71"/><rect x="12" y="3" width="4" height="4" fill="black"/><path d="M12 20 L18 20" stroke="%2327ae60" stroke-width="2"/></g><g transform="translate(50,5)"><rect x="2" y="0" width="18" height="14" rx="2" fill="%232ecc71" stroke="%2327ae60" stroke-width="2"/><rect x="4" y="14" width="14" height="12" fill="%232ecc71" stroke="%2327ae60" stroke-width="2"/><rect x="6" y="26" width="4" height="8" fill="%232ecc71"/><rect x="12" y="26" width="4" height="8" fill="%232ecc71"/><rect x="6" y="2" width="10" height="10" fill="%2327ae60" opacity="0.3"/></g><g transform="translate(90,5)"><rect x="4" y="0" width="14" height="14" rx="2" fill="%232ecc71" stroke="%2327ae60" stroke-width="2"/><rect x="6" y="14" width="10" height="12" fill="%232ecc71" stroke="%2327ae60" stroke-width="2"/><rect x="8" y="26" width="6" height="8" fill="%232ecc71"/><rect x="6" y="3" width="4" height="4" fill="black"/><path d="M4 20 L10 20" stroke="%2327ae60" stroke-width="2"/></g><g transform="translate(130,5)"><rect x="2" y="0" width="18" height="14" rx="2" fill="%232ecc71" stroke="%2327ae60" stroke-width="2"/><rect x="4" y="14" width="14" height="12" fill="%232ecc71" stroke="%2327ae60" stroke-width="2"/><rect x="6" y="26" width="4" height="8" fill="%232ecc71"/><rect x="12" y="26" width="4" height="8" fill="%232ecc71"/><rect x="5" y="4" width="4" height="4" fill="black"/><rect x="13" y="4" width="4" height="4" fill="black"/><rect x="8" y="10" width="6" height="2" fill="%2327ae60"/></g></svg>');
     
     background-repeat: no-repeat;
     background-size: 160px 40px; 
 }
 
+/* Sprite Sheet Positions */
 #robot.facing-east  { background-position: 0px 0px; }
 #robot.facing-north { background-position: -40px 0px; }
 #robot.facing-west  { background-position: -80px 0px; }
@@ -246,23 +246,145 @@ button.run-btn:hover { background-color: #008bb0; }
 .log-entry { border-bottom: 1px solid #444; padding: 2px 0; font-size: 0.85rem; }
 
 /* --- MODAL STYLES --- */
-.modal {
+
+/* --- MODAL BASE STYLES --- */
+.modals {
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Dark semi-transparent background */
+    background: rgba(0, 0, 0, 0.6); /* Darker overlay for focus */
+    backdrop-filter: blur(2px); /* Modern blur effect */
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 100; /* Sit on top of everything */
+    z-index: 1000;
     opacity: 1;
     transition: opacity 0.3s ease;
 }
 
-.modal.hidden {
+.modals.hidden {
     display: none;
     opacity: 0;
 }
+
+/* --- MODAL CONTENT BOX --- */
+.modals-content {
+    background: white;
+    width: 90%;
+    max-width: 600px;
+    max-height: 85vh; /* Prevents modal from being taller than screen */
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column; /* Stack Header, Body, Footer */
+    overflow: hidden; /* Clips corners */
+    text-align: left;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* --- HEADER --- */
+.modals-header {
+    background: #3498db;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modals-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.close-icon {
+    font-size: 2rem;
+    line-height: 1rem;
+    cursor: pointer;
+    opacity: 0.8;
+}
+.close-icon:hover { opacity: 1; }
+
+/* --- BODY (SCROLLABLE) --- */
+.modals-body {
+    padding: 20px;
+    overflow-y: auto; /* Adds scrollbar inside the modal if needed */
+    color: #2c3e50;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.modals-body h3 {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    color: #2980b9;
+    font-size: 1.1rem;
+    border-bottom: 2px solid #ecf0f1;
+    padding-bottom: 5px;
+}
+
+/* --- COMMAND BLOCKS (The Code Styling) --- */
+.command-block {
+    background-color: #f8f9fa;
+    border-left: 4px solid #3498db;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 0 4px 4px 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.command-block code {
+    font-family: 'Consolas', monospace;
+    font-weight: bold;
+    color: #c0392b;
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+.command-block span {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* --- TIPS LIST --- */
+.tips-list {
+    padding-left: 20px;
+    margin-top: 5px;
+}
+.tips-list li {
+    margin-bottom: 5px;
+}
+
+/* --- FOOTER --- */
+.modals-footer {
+    padding: 15px 20px;
+    background: #f1f2f6;
+    border-top: 1px solid #ddd;
+    text-align: right;
+}
+
+/* --------------------*/
+
+.modal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.modal.hidden { display: none; opacity: 0; }
 
 .modal-content {
     background: white;
@@ -271,7 +393,7 @@ button.run-btn:hover { background-color: #008bb0; }
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     text-align: center;
     width: 300px;
-    border-left: 6px solid #e74c3c; /* Red stripe on left */
+    border-left: 6px solid #e74c3c;
     animation: popIn 0.3s ease;
 }
 
@@ -280,49 +402,10 @@ button.run-btn:hover { background-color: #008bb0; }
     to { transform: scale(1); opacity: 1; }
 }
 
-/* Update existing wall styles */
+/* Success Modal Theme */
+.success-theme { border-left: 6px solid #2ecc71; }
+.success-theme h2 { color: #2ecc71; }
 
-/* Vertical Wall (Existing) */
-.wall-vertical {
-    width: 6px;
-    height: 40px; 
-    margin-left: -3px; 
-}
-
-/* NEW: Horizontal Wall (The Ceiling) */
-.wall-horizontal {
-    width: 40px;
-    height: 6px;
-    margin-top: -3px; /* Center it on the top line */
-    /* Position adjustments will happen in JS */
-}
-
-/* The new Reset Button */
-#reset-btn {
-    background-color: #f39c12; /* Orange */
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 5px;
-    margin-left: 10px; /* Space between buttons */
-}
-
-#reset-btn:hover {
-    background-color: #d35400; /* Darker Orange on hover */
-}
-
-/* --- SUCCESS MODAL STYLES --- */
-.success-theme {
-    border-left: 6px solid #2ecc71; /* Green stripe */
-}
-
-.success-theme h2 {
-    color: #2ecc71;
-}
-
-/* Button Layout */
 .modal-buttons {
     margin-top: 20px;
     display: flex;
@@ -330,90 +413,67 @@ button.run-btn:hover { background-color: #008bb0; }
     justify-content: center;
 }
 
-/* "Next Level" Button */
 .primary-btn {
-    background-color: #2ecc71;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 1rem;
+    background-color: #2ecc71; color: white;
+    border: none; padding: 10px 20px; border-radius: 4px;
+    cursor: pointer; font-weight: bold; font-size: 1rem;
 }
-.primary-btn:hover {
-    background-color: #27ae60;
-}
+.primary-btn:hover { background-color: #27ae60; }
 
-/* "Stay Here" Button */
 .secondary-btn {
-    background-color: #eee;
-    color: #333;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
+    background-color: #eee; color: #333;
+    border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;
 }
-.secondary-btn:hover {
-    background-color: #ddd;
+.secondary-btn:hover { background-color: #ddd; }
+
+/* Reset Button (In Header) */
+#reset-btn {
+    background-color: #f39c12; color: white;
+    border: none; padding: 8px 16px; font-size: 0.9rem;
+    cursor: pointer; border-radius: 4px; margin-left: 10px;
 }
-
-
-/* --- HEADER BUTTON --- */
-#help-btn {
-    background: white;
-    border: 1px solid #ccc;
-    padding: 8px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
+#reset-btn:hover { background-color: #d35400; }
+/* --- SPEED SLIDER --- */
+.speed-control {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: #f9f9f9;
+    padding: 5px 10px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
     margin-right: 10px;
-    transition: background 0.2s;
-}
-#help-btn:hover {
-    background-color: #f0f0f0;
-    border-color: #aaa;
 }
 
-/* --- INFO MODAL THEME (BLUE) --- */
-.info-theme {
-    border-left: 6px solid #3498db; /* Blue Stripe */
-    text-align: left; /* Align text left for easier reading */
-    width: 450px;     /* Make this modal slightly wider */
+#speed-slider {
+    -webkit-appearance: none; /* Override default look */
+    width: 80px;
+    height: 6px;
+    background: #bdc3c7;
+    border-radius: 5px;
+    outline: none;
 }
 
-.info-theme h2 {
-    color: #3498db;
-    margin-bottom: 15px;
-    text-align: center;
+/* Slider Handle (Thumb) */
+#speed-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #9b59b6; /* Purple accent */
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background .15s ease-in-out;
 }
 
-/* Command List Styling */
-.command-list {
-    list-style: none;
-    padding: 0;
-    margin: 20px 0;
+#speed-slider::-webkit-slider-thumb:hover {
+    background: #8e44ad;
 }
 
-.command-list li {
-    margin-bottom: 15px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
-}
-
-.command-list code {
-    background-color: #f0f0f0;
-    color: #c7254e; /* Code Red color */
-    padding: 4px 6px;
-    border-radius: 4px;
-    font-family: monospace;
-    font-size: 1.1em;
-    font-weight: bold;
-    display: block; /* Put code on its own line */
-    margin-bottom: 5px;
-}
-
-.command-list span {
-    font-size: 0.9rem;
-    color: #555;
+#editor {
+    /* ... your existing styles ... */
+    
+    /* Make the Tab character width equal to 4 spaces */
+    tab-size: 4;
+    -moz-tab-size: 4; /* Firefox */
 }
