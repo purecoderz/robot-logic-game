@@ -125,3 +125,5 @@ const levels = [
         ]
     }
 ];
+
+let solved = []
