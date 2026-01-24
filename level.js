@@ -8,7 +8,7 @@ const levels = [
         randomGoal: true,
         walls: [],
         // NEW: Allow everything
-        restricted: ["wallInFront", "atGoal", "wallByRight", "wallByLeft"] 
+        restricted: [] 
     },
 
     // --- LEVEL 2: The Hurdles ---
@@ -34,7 +34,7 @@ const levels = [
             {x: 6, y: 1, side: 'N'}, {x: 7, y: 1, side: 'N'},
             {x: 8, y: 1, side: 'N'}, {x: 9, y: 1, side: 'N'}
         ],
-        restricted: ["wallInFront", "atGoal", "wallByRight", "wallByLeft"] 
+        restricted: [] 
     },
 
     // --- LEVEL 3: Lucky Hurdles ---
@@ -61,7 +61,7 @@ const levels = [
             {x: 3, y: 1, side: 'N'}, {x: 4, y: 1, side: 'N'}, {x: 5, y: 1, side: 'N'},
             {x: 6, y: 1, side: 'N'}, {x: 7, y: 1, side: 'N'}, {x: 8, y: 1, side: 'N'}
         ],
-        restricted: ["wallInFront", "wallByRight", "wallByLeft"] 
+        restricted: [] 
     },
 
     // --- LEVEL 4: Uneven Hurdles ---
@@ -125,5 +125,3 @@ const levels = [
         ]
     }
 ];
-
-let solved = []
